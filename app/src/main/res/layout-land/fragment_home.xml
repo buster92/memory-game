@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+    <data>
+        <import type="android.view.View" />
+        <import type="com.andresgarrido.memorygame.HomeViewModel.BoardType" />
+        <variable
+            name="viewModel"
+            type="com.andresgarrido.memorygame.HomeViewModel" />
+    </data>
+    <FrameLayout
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".Home"
+        android:background="@drawable/game_background"
+        android:paddingTop="32dp"
+        android:paddingBottom="32dp"
+        android:paddingStart="64dp"
+        android:paddingEnd="64dp"
+        android:animateLayoutChanges="true">
+
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/rounded_square_bg"
+                android:gravity="center_horizontal"
+                android:paddingTop="32dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="48sp"
+                    android:fontFamily="@font/gameria"
+                    android:text="@string/app_name"
+                    android:layout_gravity="center_horizontal"
+                    android:textColor="@color/teal_700"
+                    android:gravity="center"
+                    />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="48sp"
+                    android:fontFamily="@font/gameria"
+                    android:text="@string/start_game"
+                    android:textColor="@color/red_400"
+                    android:layout_gravity="center"
+                    android:padding="32dp"
+                    android:gravity="center"
+                    android:visibility="@{viewModel.isStartGameVisible ? View.VISIBLE : View.GONE}"
+                    android:onClick="@{viewModel::onStartGameClick}"/>
+
+                <GridLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:columnCount="2"
+                    android:layout_gravity="center"
+                    android:foregroundGravity="center"
+                    android:visibility="@{viewModel.isStartGameVisible ? View.GONE : View.VISIBLE}"
+                    >
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="48sp"
+                        android:fontFamily="@font/gameria"
+                        android:padding="24dp"
+                        android:text="@string/size_3_x_4"
+                        android:onClick="@{(view) -> viewModel.selectMenuItem(view, BoardType.SIZE_3X4)}"/>
+
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="48sp"
+                        android:fontFamily="@font/gameria"
+                        android:padding="24dp"
+                        android:text="@string/size_5_x_2"
+                        android:onClick="@{(view) -> viewModel.selectMenuItem(view, BoardType.SIZE_5X2)}" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="48sp"
+                        android:fontFamily="@font/gameria"
+                        android:padding="24dp"
+                        android:text="@string/size_4_x_4"
+                        android:onClick="@{(view) -> viewModel.selectMenuItem(view, BoardType.SIZE_4X4)}" />
+
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="48sp"
+                        android:fontFamily="@font/gameria"
+                        android:padding="24dp"
+                        android:text="@string/size_4_x_5"
+                        android:onClick="@{(view) -> viewModel.selectMenuItem(view, BoardType.SIZE_4X5)}" />
+
+
+                </GridLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="32sp"
+                    android:fontFamily="@font/gameria"
+                    android:padding="16dp"
+                    android:text="@string/exit"
+                    android:layout_gravity="bottom|center"
+                    android:onClick="@{viewModel::onExitClick}" />
+
+            </FrameLayout>
+        </FrameLayout>
+
+</layout>
