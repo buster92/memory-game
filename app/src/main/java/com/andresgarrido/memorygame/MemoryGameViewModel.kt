@@ -2,7 +2,6 @@ package com.andresgarrido.memorygame
 
 import android.animation.AnimatorInflater
 import android.animation.AnimatorSet
-import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
 import android.graphics.Color
@@ -11,8 +10,6 @@ import android.media.MediaPlayer
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
-import android.widget.Toast
-import androidx.cardview.widget.CardView
 import androidx.core.animation.addListener
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -22,25 +19,25 @@ import androidx.navigation.Navigation.findNavController
 
 class MemoryGameViewModel : ViewModel() {
 
-    private var remainingPairs: Int = 0
     private val _score = MutableLiveData(0)
     val scoreText: LiveData<String> = Transformations.map(_score) {
-
         val score: Int = it
         if (score in 0..9) {
             "0".plus(score.toString())
         }
         else
             score.toString()
-
     }
 
     val exitGameFlag = MutableLiveData(false)
 
-    lateinit var cardFlipPlayer: MediaPlayer
-    lateinit var pairMatchPlayer: MediaPlayer
-    lateinit var pairNotMatchPlayer: MediaPlayer
-    lateinit var screenClearedPlayer: MediaPlayer
+    private var remainingPairs: Int = 0
+    private var openedCardView: View? = null
+    private var animating = false
+    private lateinit var cardFlipPlayer: MediaPlayer
+    private lateinit var pairMatchPlayer: MediaPlayer
+    private lateinit var pairNotMatchPlayer: MediaPlayer
+    private lateinit var screenClearedPlayer: MediaPlayer
 
     fun init(context: Context, totalPairs: Int) {
         cardFlipPlayer = MediaPlayer.create(context, R.raw.card_flip)
@@ -63,13 +60,8 @@ class MemoryGameViewModel : ViewModel() {
         pairMatchPlayer.release()
         pairNotMatchPlayer.release()
         screenClearedPlayer.release()
+        openedCardView = null
     }
-
-    @SuppressLint("StaticFieldLeak")
-    private var openedCardView:View? = null
-
-    private var animating = false
-
 
 
     fun onBackClicked(v: View) {

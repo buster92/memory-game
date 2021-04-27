@@ -111,7 +111,7 @@ class MemoryGameFragment : Fragment() {
             cardView.scaleType = ImageView.ScaleType.FIT_CENTER
             cardView.setPadding(8.px, 8.px, 8.px, 8.px)
             cardView.layoutParams = FrameLayout.LayoutParams(cardWidth, cardHeight)
-            cardView.tag = CardData(index, image)
+            cardView.tag = CardData(image)
             cardView.setOnClickListener {
                 viewModel.onCardClick(it)
             }

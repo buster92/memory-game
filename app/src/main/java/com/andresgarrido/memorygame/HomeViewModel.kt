@@ -30,7 +30,7 @@ class HomeViewModel : ViewModel() {
             mutableOptionChosen.value = boardType
             return
         }
-        playSound() {
+        playSound {
             mutableOptionChosen.value = boardType
         }
     }
@@ -51,7 +51,8 @@ class HomeViewModel : ViewModel() {
         mediaPlayer.setOnCompletionListener { onComplete() }
         mediaPlayer.start()
     }
-    public enum class BoardType {
+
+    enum class BoardType {
         NONE,
         SIZE_3X4,
         SIZE_5X2,

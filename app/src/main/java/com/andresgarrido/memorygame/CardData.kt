@@ -1,6 +1,6 @@
 package com.andresgarrido.memorygame
 
-class CardData(id: Int, _image: Int) {
+class CardData(_image: Int) {
     var state = CardState.HIDE
     var image: Int = _image
 }

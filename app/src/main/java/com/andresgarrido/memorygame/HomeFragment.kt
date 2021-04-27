@@ -25,6 +25,12 @@ class HomeFragment : Fragment() {
         binding.viewModel = viewModel
         context?.let { viewModel.initSelectionAudio(it) }
 
+       loadObservers()
+
+        return binding.root
+    }
+
+    private fun loadObservers() {
         viewModel.isGameExit.observe(viewLifecycleOwner, { isExit ->
             if (isExit) {
                 activity?.finish()
@@ -41,7 +47,5 @@ class HomeFragment : Fragment() {
             }
 
         })
-
-        return binding.root
     }
 }
