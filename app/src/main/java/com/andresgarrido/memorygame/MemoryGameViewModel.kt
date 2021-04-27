@@ -3,7 +3,13 @@ package com.andresgarrido.memorygame
 import android.animation.AnimatorInflater
 import android.animation.AnimatorSet
 import android.annotation.SuppressLint
+import android.app.AlertDialog
+import android.content.Context
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.media.MediaPlayer
 import android.view.View
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.cardview.widget.CardView
@@ -16,30 +22,48 @@ import androidx.navigation.Navigation.findNavController
 
 class MemoryGameViewModel : ViewModel() {
 
-    val shouldExit = MutableLiveData(false)
-
-//    fun getScoreText(): String {
-//        val score: Int = _score.value!!
-//        return if (score in 0..9) {
-//            return "0".plus(score.toString())
-//        }
-//        else
-//            score.toString()
-//    }
-
-
+    private var remainingPairs: Int = 0
     private val _score = MutableLiveData(0)
     val scoreText: LiveData<String> = Transformations.map(_score) {
 
-            val score: Int = it
-            if (score in 0..9) {
-                "0".plus(score.toString())
-            }
-            else
-                score.toString()
+        val score: Int = it
+        if (score in 0..9) {
+            "0".plus(score.toString())
+        }
+        else
+            score.toString()
 
     }
 
+    val exitGameFlag = MutableLiveData(false)
+
+    lateinit var cardFlipPlayer: MediaPlayer
+    lateinit var pairMatchPlayer: MediaPlayer
+    lateinit var pairNotMatchPlayer: MediaPlayer
+    lateinit var screenClearedPlayer: MediaPlayer
+
+    fun init(context: Context, totalPairs: Int) {
+        cardFlipPlayer = MediaPlayer.create(context, R.raw.card_flip)
+        cardFlipPlayer.setVolume(1.0f, 1.0f)
+
+        pairMatchPlayer = MediaPlayer.create(context, R.raw.casino_win)
+        pairMatchPlayer.setVolume(1.0f, 1.0f)
+
+        pairNotMatchPlayer = MediaPlayer.create(context, R.raw.wrong)
+        pairNotMatchPlayer.setVolume(1.0f, 1.0f)
+
+        screenClearedPlayer = MediaPlayer.create(context, R.raw.screen_cleared)
+        screenClearedPlayer.setVolume(1.0f, 1.0f)
+
+        remainingPairs = totalPairs
+    }
+
+    fun finalize() {
+        cardFlipPlayer.release()
+        pairMatchPlayer.release()
+        pairNotMatchPlayer.release()
+        screenClearedPlayer.release()
+    }
 
     @SuppressLint("StaticFieldLeak")
     private var openedCardView:View? = null
@@ -57,6 +81,7 @@ class MemoryGameViewModel : ViewModel() {
         if (animating || cardData.state == CardState.SHOW)
             return
         animating = true
+        cardFlipPlayer.start()
 
         val context = cardView.context
         val animatorSet = AnimatorSet()
@@ -80,18 +105,23 @@ class MemoryGameViewModel : ViewModel() {
                 if (openedCardView != null) {
                     val openedCard = openedCardView?.tag as CardData
                     if (openedCard.image == cardData.image) {
-                        Toast.makeText(context, "WELL DONE!", Toast.LENGTH_SHORT).show()
                         _score.postValue(_score.value?.plus(50))
+                        remainingPairs--
+                        pairMatchPlayer.start()
                         animating = false
                         openedCardView = null
+
+                        checkIfEndGame(cardView)
                     }
                     else {
+                        pairNotMatchPlayer.start()
                         cardView.postDelayed({
                             animateBack(openedCardView)
                             animateBack(cardView)
                             _score.postValue(_score.value?.minus(10))
                             openedCardView = null
                             animating = false
+                            cardFlipPlayer.start()
                         }, 1000)
                     }
                 } else {
@@ -133,5 +163,27 @@ class MemoryGameViewModel : ViewModel() {
             animatorSet.start()
         })
         animatorSet.start()
+    }
+
+    private fun checkIfEndGame(view: View) {
+        if (remainingPairs == 0) {
+
+            val alertDialog = AlertDialog.Builder(view.context)
+                    .setView(R.layout.dialog_stage_clear)
+                    .create()
+            alertDialog.setOnShowListener {
+                alertDialog.findViewById<Button>(R.id.button_try_again).setOnClickListener {
+                    alertDialog.dismiss()
+                    findNavController(view).navigateUp()
+                }
+                alertDialog.findViewById<Button>(R.id.button_exit_game).setOnClickListener {
+                    alertDialog.dismiss()
+                    exitGameFlag.postValue(true)
+                }
+            }
+            alertDialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            alertDialog.show()
+            screenClearedPlayer.start()
+        }
     }
 }

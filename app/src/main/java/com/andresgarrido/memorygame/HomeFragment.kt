@@ -1,5 +1,6 @@
 package com.andresgarrido.memorygame
 
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -17,6 +18,7 @@ class HomeFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR
         val binding = FragmentHomeBinding.inflate(inflater)
 
         binding.lifecycleOwner = this
@@ -35,6 +37,7 @@ class HomeFragment : Fragment() {
                 val action = HomeFragmentDirections.actionHomeFragmentToGameFragment(option)
                 findNavController().navigate(action)
                 viewModel.selectMenuItem(null, HomeViewModel.BoardType.NONE)
+                viewModel.isStartGameVisible.postValue(true)
             }
 
         })

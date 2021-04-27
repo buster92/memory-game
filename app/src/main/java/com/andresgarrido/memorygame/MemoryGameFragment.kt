@@ -1,5 +1,6 @@
 package com.andresgarrido.memorygame
 
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -23,7 +24,7 @@ class MemoryGameFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
     }
 
     override fun onCreateView(
@@ -36,14 +37,24 @@ class MemoryGameFragment : Fragment() {
         viewModel = ViewModelProvider(this).get(MemoryGameViewModel::class.java)
         binding.viewModel = viewModel
 
-
         binding.root.viewTreeObserver.addOnGlobalLayoutListener(object : OnGlobalLayoutListener {
             override fun onGlobalLayout() {
                 binding.root.viewTreeObserver.removeOnGlobalLayoutListener(this)
                 loadViews()
             }
         })
+
+        viewModel.exitGameFlag.observe(viewLifecycleOwner, { isExit ->
+            if (isExit) {
+                activity?.finish()
+            }
+        })
         return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        viewModel.finalize()
     }
 
     fun loadViews() {
@@ -69,6 +80,10 @@ class MemoryGameFragment : Fragment() {
             else -> {}
         }
 
+        val totalPairs = cardsCount / 2
+
+        context?.let { viewModel.init(it, totalPairs) }
+
         val cardWidth = binding.gameGrid.width / binding.gameGrid.columnCount
         val cardHeight = binding.gameGrid.height / (cardsCount / binding.gameGrid.columnCount)
 
@@ -81,7 +96,7 @@ class MemoryGameFragment : Fragment() {
                 R.drawable.card_dragon, R.drawable.card_garbageman, R.drawable.card_ghostdog,
                 R.drawable.card_hen, R.drawable.card_horse, R.drawable.card_pig,  R.drawable.card_spider
         )
-                .subList(0, cardsCount / 2)
+                .subList(0, totalPairs)
 
         Log.d("MEMGAME", "prev list: $cardsAvailable total cards:$cardsCount")
         cardsAvailable.addAll(cardsAvailable)
